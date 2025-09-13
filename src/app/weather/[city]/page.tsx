@@ -122,7 +122,15 @@ export default function Weather() {
                 {loading ? (
                     <p className="text-white text-2xl sm:text-3xl self-center">Loading...</p>
                 ) : error ? (
-                    <p className="text-white text-lg sm:text-2xl">{error}</p>
+                    <div className="flex flex-col gap-2 items-center justify-center">
+                        <p className="text-white text-lg sm:text-2xl">{error}</p>
+                        <button
+                            className="bg-amber-100 w-full rounded-xl p-3 sm:p-4 text-sm sm:text-base cursor-pointer text-black"
+                            onClick={() => router.back()}
+                        >
+                            Go back
+                        </button>
+                    </div>
                 ) : weather && weather.weather?.length > 0 ? (
                     <>
                         {/* Temperature + Weather Icon */}
@@ -171,7 +179,10 @@ export default function Weather() {
                                 type="text"
                                 placeholder="Search city..."
                                 value={searchCity}
-                                onChange={(e) => setSearchCity(e.target.value)}
+                                onChange={(e) => {
+                                    const value = e.target.value.replace(/[^a-zA-Z0-9\s]/g, "");
+                                    setSearchCity(value);
+                                }}
                                 onKeyDown={handleKeyDown}
                                 className="w-full text-sm sm:text-base py-2 px-4 rounded-full focus:outline-none bg-[#1C1C3C] text-white"
                             />
@@ -313,7 +324,9 @@ export default function Weather() {
                         </div>
                     </>
                 ) : (
-                    <p className="text-white text-lg sm:text-2xl">City not found</p>
+                    <div className="flex flex-col gap-6">
+                        <p className="text-white text-lg sm:text-2xl">City not found</p>
+                    </div>
                 )}
             </div>
         </div>
