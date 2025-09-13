@@ -1,6 +1,6 @@
 export async function getCurrentWeather(city: string) {
     const res = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&units=metric&lang=fa`,
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&units=metric&lang=en`,
         {
             cache: "no-cache",
             next: { revalidate: 60 },

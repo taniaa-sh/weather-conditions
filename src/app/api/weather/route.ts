@@ -9,7 +9,7 @@ const apiKey = process.env.WEATHER_API_KEY;
     const res = await fetch(
       `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
         city
-      )}&appid=${apiKey}&units=metric&lang=fa`
+      )}&appid=${apiKey}&units=metric&lang=en`
     );
 
     const data = await res.json();
