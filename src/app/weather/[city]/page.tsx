@@ -21,14 +21,16 @@ interface ForecastData {
     temp_max: number;
 }
 
-const mockForecast: ForecastData[] = [
-    { day: "Tuesday", condition: "Clear", temp_min: 11, temp_max: 12 },
-    { day: "Wednesday", condition: "Clear", temp_min: 13, temp_max: 15 },
-    { day: "Thursday", condition: "Clear", temp_min: 12, temp_max: 14 },
-];
+interface ForecastData {
+    day: string;
+    condition: string;
+    temp_min: number;
+    temp_max: number;
+}
 
 export default function Weather() {
     const [weather, setWeather] = useState<WeatherData | null>(null);
+    const [forecast, setForecast] = useState<ForecastData[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const { city } = useParams();
@@ -60,14 +62,39 @@ export default function Weather() {
             setError(null);
 
             try {
-                const res = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
-                const data = await res.json();
+                const res1 = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
+                const res2 = await fetch(`/api/forcast?city=${encodeURIComponent(city)}`);
+                const data1 = await res1.json();
+                const data2 = await res2.json();
 
-                if (data.cod && data.cod !== 200) {
+                if (data1.cod && Number(data1.cod) !== 200) {
                     setWeather(null);
-                    setError(data.message || "Failed to fetch weather");
+                    setError(data1.message || "Failed to fetch weather");
                 } else {
-                    setWeather(data);
+                    setWeather(data1);
+
+                    if (data2.list && Array.isArray(data2.list)) {
+                        const daily: Record<string, ForecastData> = {};
+
+                        data2.list.forEach((item: any) => {
+                            const date = new Date(item.dt * 1000);
+                            const day = date.toLocaleDateString("en-US", { weekday: "long" });
+
+                            if (!daily[day]) {
+                                daily[day] = {
+                                    day,
+                                    condition: item.weather[0].main,
+                                    temp_min: item.main.temp_min,
+                                    temp_max: item.main.temp_max,
+                                };
+                            } else {
+                                daily[day].temp_min = Math.min(daily[day].temp_min, item.main.temp_min);
+                                daily[day].temp_max = Math.max(daily[day].temp_max, item.main.temp_max);
+                            }
+                        });
+
+                        setForecast(Object.values(daily).slice(0, 3));
+                    }
                 }
             } catch (err) {
                 console.error(err);
@@ -165,7 +192,7 @@ export default function Weather() {
                                 <h2 className="text-white text-base sm:text-lg md:text-2xl font-semibold">
                                     3 Days Forecast
                                 </h2>
-                                {mockForecast.map((day) => (
+                                {forecast.map((day) => (
                                     <div key={day.day} className="flex items-center gap-2">
                                         <div className="bg-[#2a3854] px-3 sm:px-4 py-3 sm:py-5 flex gap-2 w-[160px] sm:w-[200px] md:w-[250px] rounded-l-2xl z-0">
                                             <Image
@@ -190,7 +217,7 @@ export default function Weather() {
                                             </div>
                                         </div>
                                         <div className="bg-[#7b83eb] px-3 sm:px-4 py-6 sm:py-8 flex justify-center items-center text-xs sm:text-sm rounded-2xl -ml-8 sm:-ml-10 z-10 text-white">
-                                            {day.temp_min}° / {day.temp_max}°
+                                            {Math.round(day.temp_min)}° / {Math.round(day.temp_max)}°
                                         </div>
                                     </div>
                                 ))}
