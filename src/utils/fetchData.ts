@@ -1,18 +1,18 @@
-export async function getCurrentWeather(city: string) {
-    const res = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&units=metric&lang=en`,
-        {
-            cache: "no-cache",
-            next: { revalidate: 60 },
-        }
-    )
-    if (!res.ok) {
-        throw new Error("Failed to fetch weather data");
+export const getCurrentWeather = async (city: string) => {
+  const res = await fetch(
+    `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&units=metric&lang=en`,
+    {
+      cache: "no-cache",
+      next: { revalidate: 60 },
     }
-    return res.json();
+  )
+  if (!res.ok) {
+    throw new Error("Failed to fetch weather data");
+  }
+  return res.json();
 }
 
-export function getWeatherBackground(condition: string) {
+export const getWeatherBackground = (condition: string) => {
   switch (condition.toLowerCase()) {
     case "clear":
       return "/weatherBackgrounds/sunny.avif";
@@ -34,5 +34,3 @@ export function getWeatherBackground(condition: string) {
       return "/weatherBackgrounds/default.avif";
   }
 }
-
-
