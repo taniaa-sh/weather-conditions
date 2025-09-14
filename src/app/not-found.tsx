@@ -27,7 +27,7 @@ export default function NotFound() {
 
   return (
     <div
-      className="relative w-full h-screen"
+      className="relative w-full h-screen custom-cursor-pointer"
       onMouseMove={handleMouseMove}
     >
       {/* Background image */}
@@ -76,7 +76,7 @@ export default function NotFound() {
         </div>
         <button
           onClick={() => window.location.href = "/"}
-          className="bg-white text-black px-4 py-2 flex justify-center items-center cursor-pointer rounded-lg mt-4"
+          className="bg-white text-black px-4 py-2 flex justify-center items-center  rounded-lg mt-4"
         >
           Back to home
         </button>
