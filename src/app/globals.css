@@ -35,9 +35,14 @@ body {
   letter-spacing: 2px;
 }
 
+@media (max-width: 800px) {
+  .notfound {
+    font-size: 2.5rem;
+  }
+}
+
 .notfound span {
   display: inline-block;
-  /* animation: glow 2s infinite alternate; */
 }
 
 .disable {
@@ -48,8 +53,8 @@ body {
 
 .ghost {
   color: transparent;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
-  animation: ghostfade 2s infinite alternate;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+  animation: ghostfade 1s infinite alternate;
 }
 
 .blink {
@@ -85,13 +90,11 @@ body {
 
 @keyframes ghostfade {
 
-  0%,
-  50% {
+  0% {
     opacity: 0.2;
   }
 
-  75%,
   100% {
-    opacity: 0.8;
+    opacity: 1;
   }
 }

@@ -32,7 +32,7 @@ export default function NotFound() {
     >
       {/* Background image */}
       <Image
-        src={"/wallpaper.jpg"}
+        src={"/dark6.avif"}
         alt="weather"
         fill
         className="object-cover"
@@ -40,7 +40,7 @@ export default function NotFound() {
 
       {/* Black overlay with circular transparent spot */}
       <div
-        className="absolute inset-0 bg-black pointer-events-none"
+        className="hidden sm:block absolute inset-0 bg-black pointer-events-none"
         style={{
           maskImage: `radial-gradient(circle ${radius}px at ${mousePos.x}px ${mousePos.y}px, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 50%)`,
           WebkitMaskImage: `radial-gradient(circle ${radius}px at ${mousePos.x}px ${mousePos.y}px, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 50%)`,
@@ -70,7 +70,7 @@ export default function NotFound() {
             <span>d</span>
           </div>
 
-          <p className="text-xl text-white mt-2">
+          <p className="text-sm md:text-xl text-white mt-2">
             Hmmm, the page you were looking for doesn't seem to exist anymore.
           </p>
         </div>
