@@ -45,10 +45,10 @@ export default function Home() {
     <div className="bg-[#1C1C3C] fixed flex inset-0 w-full h-full z-50 items-center justify-center px-4 sm:px-20 lg:px-[200px] py-20 sm:py-40 lg:py-[200px]">
       <div className="flex flex-col items-center justify-center rounded-xl overflow-hidden gap-4 bg-white z-50 w-full h-full relative">
         <Image
-          src={"/cityPictures/world4.avif"}
+          src={"/cityPictures/world5.avif"}
           alt="Centered"
           fill
-          className="object-cover w-full h-full"
+          className="object-cover"
         />
         <div
           className="absolute flex items-center gap-2 text-start text-xl sm:text-2xl md:text-3xl text-gray-700 px-4 sm:px-6 lg:px-6 py-2 sm:py-3 rounded-full shadow-lg w-[90%] sm:w-[80%] lg:w-[70%] bg-gray-300/90 backdrop-blur-sm z-50"
