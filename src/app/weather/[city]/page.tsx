@@ -1,5 +1,6 @@
 "use client";
 
+import Loading from "@/components/Loading";
 import { getWeatherBackground } from "@/utils/fetchData";
 import Image from "next/image";
 import { notFound, useParams, useRouter } from "next/navigation";
@@ -29,26 +30,79 @@ interface ForecastData {
 }
 
 export default function Weather() {
+    const router = useRouter();
+    const { city } = useParams();
+
     const [weather, setWeather] = useState<WeatherData | null>(null);
     const [forecast, setForecast] = useState<ForecastData[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const { city } = useParams();
-
     const [searchCity, setSearchCity] = useState("");
-    const router = useRouter();
 
     const handleSearch = () => {
         if (searchCity.trim() !== "") {
             router.push(`/weather/${searchCity.trim()}`);
         }
-    };
+    }
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
             handleSearch();
         }
-    };
+    }
+
+    const fetchWeather = async () => {
+        setLoading(true);
+        setError(null);
+
+        if (!city) {
+            setLoading(false);
+            return
+        }
+
+        try {
+            const res1 = await fetch(`/api/weather?city=${encodeURIComponent(city?.toString())}`);
+            const res2 = await fetch(`/api/forcast?city=${encodeURIComponent(city?.toString())}`);
+            const data1 = await res1.json();
+            const data2 = await res2.json();
+
+            if (data1.cod && Number(data1.cod) !== 200) {
+                setWeather(null);
+                setError(data1.message || "Failed to fetch weather");
+            } else {
+                setWeather(data1);
+
+                if (data2.list && Array.isArray(data2.list)) {
+                    const daily: Record<string, ForecastData> = {};
+
+                    data2.list.forEach((item: any) => {
+                        const date = new Date(item.dt * 1000);
+                        const day = date.toLocaleDateString("en-US", { weekday: "long" });
+
+                        if (!daily[day]) {
+                            daily[day] = {
+                                day,
+                                condition: item.weather[0].main,
+                                temp_min: item.main.temp_min,
+                                temp_max: item.main.temp_max,
+                            };
+                        } else {
+                            daily[day].temp_min = Math.min(daily[day].temp_min, item.main.temp_min);
+                            daily[day].temp_max = Math.max(daily[day].temp_max, item.main.temp_max);
+                        }
+                    });
+
+                    setForecast(Object.values(daily).slice(0, 3));
+                }
+            }
+        } catch (err) {
+            console.error(err);
+            setWeather(null);
+            setError("Server error");
+        } finally {
+            setLoading(false);
+        }
+    }
 
     useEffect(() => {
         if (!city) {
@@ -56,86 +110,24 @@ export default function Weather() {
             setError("City is required");
             return;
         }
-
-        async function fetchWeather() {
-            setLoading(true);
-            setError(null);
-
-            try {
-                const res1 = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
-                const res2 = await fetch(`/api/forcast?city=${encodeURIComponent(city)}`);
-                const data1 = await res1.json();
-                const data2 = await res2.json();
-
-                if (data1.cod && Number(data1.cod) !== 200) {
-                    setWeather(null);
-                    setError(data1.message || "Failed to fetch weather");
-                } else {
-                    setWeather(data1);
-
-                    if (data2.list && Array.isArray(data2.list)) {
-                        const daily: Record<string, ForecastData> = {};
-
-                        data2.list.forEach((item: any) => {
-                            const date = new Date(item.dt * 1000);
-                            const day = date.toLocaleDateString("en-US", { weekday: "long" });
-
-                            if (!daily[day]) {
-                                daily[day] = {
-                                    day,
-                                    condition: item.weather[0].main,
-                                    temp_min: item.main.temp_min,
-                                    temp_max: item.main.temp_max,
-                                };
-                            } else {
-                                daily[day].temp_min = Math.min(daily[day].temp_min, item.main.temp_min);
-                                daily[day].temp_max = Math.max(daily[day].temp_max, item.main.temp_max);
-                            }
-                        });
-
-                        setForecast(Object.values(daily).slice(0, 3));
-                    }
-                }
-            } catch (err) {
-                console.error(err);
-                setWeather(null);
-                setError("Server error");
-            } finally {
-                setLoading(false);
-            }
-        }
-
         fetchWeather();
     }, [city]);
-
-    const bgImage = weather?.weather?.[0]?.main
-        ? getWeatherBackground(weather.weather[0].main)
-        : "/weatherBackgrounds/default.avif";
 
     return (
         <div className="relative w-full h-screen">
             {/* Background */}
             <Image
-                src={bgImage}
+                src={weather?.weather?.[0]?.main ? getWeatherBackground(weather.weather[0].main) : "/loading1.avif"}
                 alt="weather"
                 fill
-                className="object-cover"
+                className="object-"
             />
 
             {/* Overlay */}
             <div className="absolute inset-0 bg-black/10 flex flex-col gap-6 sm:gap-10 items-center justify-start px-4 sm:px-10 lg:px-[100px] py-12 sm:py-20 lg:py-[100px] overflow-x-hidden">
                 {loading ? (
-                    <p className="text-white text-2xl sm:text-3xl self-center">Loading...</p>
+                    <Loading />
                 ) : error ? (
-                    // <div className="flex flex-col gap-2 items-center justify-center">
-                    //     <p className="text-white text-lg sm:text-2xl">{error}</p>
-                    //     <button
-                    //         className="bg-amber-100 w-full rounded-xl p-3 sm:p-4 text-sm sm:text-base cursor-pointer text-black"
-                    //         onClick={() => router.back()}
-                    //     >
-                    //         Go back
-                    //     </button>
-                    // </div>
                     notFound()
                 ) : weather && weather.weather?.length > 0 ? (
                     <>
@@ -145,15 +137,40 @@ export default function Weather() {
                                 <div className="flex flex-col w-[100px] sm:w-[120px]">
                                     <div className="bg-indigo-600 text-white rounded-tr-4xl rounded-tl-none rounded-br-4xl p-3 sm:p-4 flex flex-col gap-2 items-center justify-center -mb-10 sm:-mb-12 z-50">
                                         {weather.weather[0].main === "Clouds" ? (
-                                            <Image src="/cloudy.svg" alt="Clouds" width={40} height={40} />
+                                            <Image
+                                                src="/cloudy.svg"
+                                                alt="Clouds"
+                                                width={40}
+                                                height={40}
+                                            />
                                         ) : weather.weather[0].main === "Rain" ? (
-                                            <Image src="/rainy.svg" alt="Rain" width={40} height={40} />
+                                            <Image
+                                                src="/rainy.svg"
+                                                alt="Rain"
+                                                width={40}
+                                                height={40}
+                                            />
                                         ) : weather.weather[0].main === "Clear" ? (
-                                            <Image src="/sunny.svg" alt="Clear" width={40} height={40} />
+                                            <Image
+                                                src="/sunny.svg"
+                                                alt="Clear"
+                                                width={40}
+                                                height={40}
+                                            />
                                         ) : weather.weather[0].main === "Snow" ? (
-                                            <Image src="/snowy.svg" alt="Snow" width={40} height={40} />
+                                            <Image
+                                                src="/snowy.svg"
+                                                alt="Snow"
+                                                width={40}
+                                                height={40}
+                                            />
                                         ) : (
-                                            <Image src="/sunny.svg" alt="Default" width={40} height={40} />
+                                            <Image
+                                                src="/sunny.svg"
+                                                alt="Default"
+                                                width={40}
+                                                height={40}
+                                            />
                                         )}
                                         <p className="text-xs sm:text-sm mt-2">{weather.weather[0].main}</p>
                                     </div>
@@ -330,9 +347,7 @@ export default function Weather() {
                         </div>
                     </>
                 ) : (
-                    <div className="flex flex-col gap-6">
-                        <p className="text-white text-lg sm:text-2xl">City not found</p>
-                    </div>
+                    null
                 )}
             </div>
         </div>
