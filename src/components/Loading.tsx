@@ -16,9 +16,9 @@ const Loading = () => {
                 animationData={animationData}
                 loop={true}
                 reversed
-                className={"size-[200px]"}
+                className={"size-[100px] sm:size-[200px]"}
             />
-            <p className="text-white text-2xl">LOADING ...</p>
+            <p className="text-white text-lg sm:text-2xl">LOADING ...</p>
         </div>
     )
 }

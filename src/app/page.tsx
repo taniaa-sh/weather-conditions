@@ -43,7 +43,7 @@ export default function Home() {
 
   return (
     <div className="bg-[#1C1C3C] fixed flex inset-0 w-full h-full z-50 items-center justify-center px-4 sm:px-20 lg:px-[200px] py-20 sm:py-40 lg:py-[200px]">
-      <div className="flex flex-col items-center justify-center rounded-xl overflow-hidden gap-4 bg-white z-50 w-full h-full relative">
+      <div className="flex flex-col items-center justify-center rounded-xl gap-4 bg-white z-50 w-full h-full relative">
         <Image
           src={"/cityPictures/world5.avif"}
           alt="Centered"

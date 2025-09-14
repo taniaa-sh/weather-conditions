@@ -1,5 +1,6 @@
 "use client";
 
+import HighlightCard from "@/components/HighlightCard";
 import Loading from "@/components/Loading";
 import { getWeatherBackground } from "@/utils/fetchData";
 import Image from "next/image";
@@ -37,11 +38,11 @@ export default function Weather() {
     const [forecast, setForecast] = useState<ForecastData[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [searchCity, setSearchCity] = useState("");
+    const [searchCity, setSearchCity] = useState(city || "");
 
     const handleSearch = () => {
-        if (searchCity.trim() !== "") {
-            router.push(`/weather/${searchCity.trim()}`);
+        if (searchCity !== "") {
+            router.push(`/weather/${searchCity}`);
         }
     }
 
@@ -120,11 +121,11 @@ export default function Weather() {
                 src={weather?.weather?.[0]?.main ? getWeatherBackground(weather.weather[0].main) : "/loading1.avif"}
                 alt="weather"
                 fill
-                className="object-"
+                className="object-cover"
             />
 
             {/* Overlay */}
-            <div className="absolute inset-0 bg-black/10 flex flex-col gap-6 sm:gap-10 items-center justify-start px-4 sm:px-10 lg:px-[100px] py-12 sm:py-20 lg:py-[100px] overflow-x-hidden">
+            <div className="absolute inset-0 bg-black/10 flex flex-col gap-6 sm:gap-10 items-center justify-start px-4 sm:px-10 lg:px-[100px] py-12 sm:py-20 lg:py-[100px] overflow-y-auto overflow-x-hidden">
                 {loading ? (
                     <Loading />
                 ) : error ? (
@@ -132,7 +133,7 @@ export default function Weather() {
                 ) : weather && weather.weather?.length > 0 ? (
                     <>
                         {/* Temperature + Weather Icon */}
-                        <div className="w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] md:w-[400px] md:h-[400px] md:bg-black/30 absolute top-0 left-0 rounded-br-full">
+                        <div className="w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] md:w-[400px] md:h-[400px] lg:bg-black/30 absolute top-0 left-0 rounded-br-full">
                             <div className="absolute top-10 sm:top-16 left-0">
                                 <div className="flex flex-col w-[100px] sm:w-[120px]">
                                     <div className="bg-indigo-600 text-white rounded-tr-4xl rounded-tl-none rounded-br-4xl p-3 sm:p-4 flex flex-col gap-2 items-center justify-center -mb-10 sm:-mb-12 z-50">
@@ -182,13 +183,12 @@ export default function Weather() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="absolute top-28 sm:top-40 left-20 sm:left-40 w-full flex items-center gap-2">
+                            <div className="absolute top-28 sm:top-40 left-20 sm:left-40 w-full items-center gap-2 hidden lg:flex">
                                 <Image
                                     src="/location.svg"
                                     alt="Location"
-                                    width={20}
-                                    height={20}
-                                    className="block md:hidden"
+                                    width={30}
+                                    height={30}
                                 />
                                 <p className="text-lg sm:text-2xl md:text-3xl font-semibold text-gray-900 md:text-white">
                                     {weather.name}
@@ -220,14 +220,14 @@ export default function Weather() {
                         </div>
 
                         {/* Forecast & Highlights */}
-                        <div className="w-full bg-black/30 flex flex-col lg:flex-row gap-6 sm:gap-10 absolute bottom-0 lg:px-[50px] px-4 py-6 sm:py-10 rounded-t-3xl sm:rounded-t-4xl">
+                        <div className="static mt-40 md:mt-0 -mb-16 md:mb-0 md:absolute bottom-0 left-0 w-[calc(100%+32px)] sm:w-full bg-black/30 flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-10 px-4 sm:px-10 lg:px-[50px] py-4 sm:py-6 lg:py-10 rounded-t-3xl sm:rounded-t-4xl">
                             {/* 3 Days Forecast */}
-                            <div className="flex flex-col gap-3 sm:gap-4 items-start md:items-center w-full">
+                            <div className="flex flex-col gap-3 sm:gap-4 items-start md:items-center w-full lg:w-1/2">
                                 <h2 className="text-white text-base sm:text-lg md:text-2xl font-semibold">
                                     3 Days Forecast
                                 </h2>
                                 {forecast.map((day) => (
-                                    <div key={day.day} className="flex items-center gap-2">
+                                    <div key={day.day} className="flex items-center gap-2 w-full">
                                         <div className="bg-[#2a3854] px-3 sm:px-4 py-3 sm:py-5 flex gap-2 w-[160px] sm:w-[200px] md:w-[250px] rounded-l-2xl z-0">
                                             <Image
                                                 src={
@@ -258,93 +258,43 @@ export default function Weather() {
                             </div>
 
                             {/* Today's Highlights */}
-                            <div className="flex flex-col gap-4 sm:gap-5 w-full mt-1">
+                            <div className="flex flex-col gap-4 sm:gap-5 w-full lg:w-1/2 mt-2 lg:mt-0">
                                 <h2 className="text-white text-base sm:text-lg md:text-2xl font-semibold">
                                     Today's Highlights
                                 </h2>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
                                     {/* Feels like */}
-                                    <div className="bg-[#29295a] w-full rounded-lg p-3 sm:p-4 flex gap-4 sm:gap-6">
-                                        <div className="flex flex-col gap-6 sm:gap-10 min-w-20 sm:min-w-24">
-                                            <p className="text-sm sm:text-md text-gray-400">Feels like</p>
-                                            <div className="text-lg sm:text-2xl text-white">
-                                                {weather.main.feels_like} °<span className="text-sm">C</span>
-                                            </div>
-                                        </div>
-                                        <div className="self-end flex items-center flex-col gap-1">
-                                            <Image
-                                                src="/temperature.svg"
-                                                alt="Temp"
-                                                width={24}
-                                                height={24}
-                                                className="self-start"
-                                            />
-                                            <p className="text-xs sm:text-sm text-gray-400">The temperature you actually feel</p>
-                                        </div>
-                                    </div>
-
+                                    <HighlightCard
+                                        title="Feels like"
+                                        value={`${weather.main.feels_like} °C`}
+                                        icon="/temperature.svg"
+                                        description="The temperature you actually feel"
+                                    />
                                     {/* Humidity */}
-                                    <div className="bg-[#29295a] w-full rounded-lg p-3 sm:p-4 flex gap-4 sm:gap-6">
-                                        <div className="flex flex-col gap-6 sm:gap-10 min-w-20 sm:min-w-24">
-                                            <p className="text-sm sm:text-md text-gray-400">Humidity</p>
-                                            <div className="text-lg sm:text-2xl text-white">
-                                                {weather.main.humidity}<span className="text-sm">%</span>
-                                            </div>
-                                        </div>
-                                        <div className="self-end flex items-center flex-col gap-1">
-                                            <Image
-                                                src="/humidity.svg"
-                                                alt="Humidity"
-                                                width={24}
-                                                height={24}
-                                                className="self-start"
-                                            />
-                                            <p className="text-xs sm:text-sm text-gray-400">The amount of water vapor in the air</p>
-                                        </div>
-                                    </div>
-
+                                    <HighlightCard
+                                        title="Humidity"
+                                        value={`${weather.main.humidity}%`}
+                                        icon="/humidity.svg"
+                                        description="The amount of water vapor in the air"
+                                    />
                                     {/* Wind speed */}
-                                    <div className="bg-[#29295a] w-full rounded-lg p-3 sm:p-4 flex gap-4 sm:gap-6">
-                                        <div className="flex flex-col gap-6 sm:gap-10 min-w-20 sm:min-w-24">
-                                            <p className="text-sm sm:text-md text-gray-400">Wind speed</p>
-                                            <div className="text-lg sm:text-2xl text-white">
-                                                {weather.wind.speed} <span className="text-sm">m/s</span>
-                                            </div>
-                                        </div>
-                                        <div className="self-end flex items-center flex-col gap-1">
-                                            <Image
-                                                src="/windSpeed.svg"
-                                                alt="Wind"
-                                                width={24}
-                                                height={24}
-                                                className="self-start"
-                                            />
-                                            <p className="text-xs sm:text-sm text-gray-400">How fast the wind is blowing right now</p>
-                                        </div>
-                                    </div>
-
+                                    <HighlightCard
+                                        title="Wind speed"
+                                        value={`${weather.wind.speed} m/s`}
+                                        icon="/windSpeed.svg"
+                                        description="How fast the wind is blowing right now"
+                                    />
                                     {/* Visibility */}
-                                    <div className="bg-[#29295a] w-full rounded-lg p-3 sm:p-4 flex gap-4 sm:gap-6">
-                                        <div className="flex flex-col gap-6 sm:gap-10 min-w-20 sm:min-w-24">
-                                            <p className="text-sm sm:text-md text-gray-400">Visibility</p>
-                                            <div className="text-lg sm:text-2xl text-white">
-                                                {weather.visibility / 1000} <span className="text-sm">km</span>
-                                            </div>
-                                        </div>
-                                        <div className="self-end flex items-center flex-col gap-1">
-                                            <Image
-                                                src="/glasses.svg"
-                                                alt="Visibility"
-                                                width={24}
-                                                height={24}
-                                                className="self-start"
-                                            />
-                                            <p className="text-xs sm:text-sm text-gray-400">The distance you can clearly see ahead</p>
-                                        </div>
-                                    </div>
+                                    <HighlightCard
+                                        title="Visibility"
+                                        value={`${weather.visibility / 1000} km`}
+                                        icon="/glasses.svg"
+                                        description="The distance you can clearly see ahead"
+                                    />
                                 </div>
                             </div>
                         </div>
+
                     </>
                 ) : (
                     null
