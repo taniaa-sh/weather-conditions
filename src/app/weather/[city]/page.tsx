@@ -2,7 +2,7 @@
 
 import { getWeatherBackground } from "@/utils/fetchData";
 import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
+import { notFound, useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface WeatherData {
@@ -115,22 +115,28 @@ export default function Weather() {
     return (
         <div className="relative w-full h-screen">
             {/* Background */}
-            <Image src={bgImage} alt="weather" fill className="object-cover" />
+            <Image
+                src={bgImage}
+                alt="weather"
+                fill
+                className="object-cover"
+            />
 
             {/* Overlay */}
             <div className="absolute inset-0 bg-black/10 flex flex-col gap-6 sm:gap-10 items-center justify-start px-4 sm:px-10 lg:px-[100px] py-12 sm:py-20 lg:py-[100px] overflow-x-hidden">
                 {loading ? (
                     <p className="text-white text-2xl sm:text-3xl self-center">Loading...</p>
                 ) : error ? (
-                    <div className="flex flex-col gap-2 items-center justify-center">
-                        <p className="text-white text-lg sm:text-2xl">{error}</p>
-                        <button
-                            className="bg-amber-100 w-full rounded-xl p-3 sm:p-4 text-sm sm:text-base cursor-pointer text-black"
-                            onClick={() => router.back()}
-                        >
-                            Go back
-                        </button>
-                    </div>
+                    // <div className="flex flex-col gap-2 items-center justify-center">
+                    //     <p className="text-white text-lg sm:text-2xl">{error}</p>
+                    //     <button
+                    //         className="bg-amber-100 w-full rounded-xl p-3 sm:p-4 text-sm sm:text-base cursor-pointer text-black"
+                    //         onClick={() => router.back()}
+                    //     >
+                    //         Go back
+                    //     </button>
+                    // </div>
+                    notFound()
                 ) : weather && weather.weather?.length > 0 ? (
                     <>
                         {/* Temperature + Weather Icon */}
