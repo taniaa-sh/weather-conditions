@@ -227,7 +227,7 @@ export default function Weather() {
                                     3 Days Forecast
                                 </h2>
                                 {forecast.map((day) => (
-                                    <div key={day.day} className="flex items-center gap-2 w-full">
+                                    <div key={day.day} className="flex items-center justify-start md:justify-center gap-2 w-full">
                                         <div className="bg-[#2a3854] px-3 sm:px-4 py-3 sm:py-5 flex gap-2 w-[160px] sm:w-[200px] md:w-[250px] rounded-l-2xl z-0">
                                             <Image
                                                 src={
