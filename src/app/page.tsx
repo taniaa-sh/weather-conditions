@@ -46,7 +46,7 @@ export default function Home() {
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 sm:py-4 rounded-lg font-semibold cursor-pointer flex items-center justify-center"
             >
               {loading ? (
-                <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                <span className="w-5 h-5 border-1 border-white border-t-transparent rounded-full animate-spin"></span>
               ) : (
                 "Search"
               )}
